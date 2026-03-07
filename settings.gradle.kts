@@ -45,16 +45,8 @@ include(
 
     "purpur",
 
-    "platform:spigot",
     "platform:paper",
-    "platform:fabric",
 
-    //nms
-    "nms:v1_21_R1",
-    "nms:v1_21_R3",
-    "nms:v1_21_R4",
-    "nms:v1_21_R5",
-    "nms:v1_21_R6",
     "nms:v1_21_R7",
 
     //test

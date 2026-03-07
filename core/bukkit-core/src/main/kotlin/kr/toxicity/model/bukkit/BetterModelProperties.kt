@@ -16,7 +16,6 @@ import kr.toxicity.model.api.event.PluginStartReloadEvent
 import kr.toxicity.model.api.pack.PackZipper
 import kr.toxicity.model.api.version.MinecraftVersion.*
 import kr.toxicity.model.bukkit.configuration.PluginConfiguration
-import kr.toxicity.model.bukkit.manager.CompatibilityManager
 import kr.toxicity.model.bukkit.manager.EntityManager
 import kr.toxicity.model.bukkit.manager.PlayerManagerImpl
 import kr.toxicity.model.bukkit.scheduler.BukkitScheduler
@@ -40,11 +39,6 @@ internal class BetterModelProperties(
     val version = parse(Bukkit.getBukkitVersion().substringBefore('-'))
     val nms = when (version) {
         V1_21_11 -> Latest()
-        V1_21_9, V1_21_10 -> kr.toxicity.model.bukkit.nms.v1_21_R6.NMSImpl()
-        V1_21_6, V1_21_7, V1_21_8 -> kr.toxicity.model.bukkit.nms.v1_21_R5.NMSImpl()
-        V1_21_5 -> kr.toxicity.model.bukkit.nms.v1_21_R4.NMSImpl()
-        V1_21_4 -> kr.toxicity.model.bukkit.nms.v1_21_R3.NMSImpl()
-        V1_21, V1_21_1 -> kr.toxicity.model.bukkit.nms.v1_21_R1.NMSImpl()
         else if BetterModelBukkit.IS_PAPER -> {
             warn(
                 "Note: this version is officially untested.".toComponent(),
@@ -79,7 +73,6 @@ internal class BetterModelProperties(
         }
     val managers by lazy {
         listOf(
-            CompatibilityManager,
             ArmorManager,
             ProfileManagerImpl,
             SkinManagerImpl,
