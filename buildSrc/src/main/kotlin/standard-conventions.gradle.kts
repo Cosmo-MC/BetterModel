@@ -4,7 +4,7 @@ plugins {
     id("com.github.hierynomus.license")
 }
 
-group = "kr.toxicity.model"
+group = "com.cosmomc"
 version = property("project_version").toString() + (BUILD_NUMBER?.let { "-SNAPSHOT-$it" } ?: "")
 
 val shade = configurations.create("shade")

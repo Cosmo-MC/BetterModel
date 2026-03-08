@@ -11,6 +11,6 @@ dependencies {
     compileOnly(libs.bundles.core)
     compileOnly(libs.cloud.core)
 
-    implementation("com.cosmomc:cosmo-pack-system:26.0.4")
+    implementation("com.cosmomc:cosmo-pack-system-api:26.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 }
