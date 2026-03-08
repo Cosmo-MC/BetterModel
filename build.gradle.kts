@@ -8,12 +8,6 @@ val minecraft = property("minecraft_version").toString()
 val versionString = version.toString()
 val groupString = group.toString()
 
-val javadocJar by tasks.registering(Jar::class) {
-    dependsOn(tasks.dokkaGenerate)
-    archiveClassifier = "javadoc"
-    from(layout.buildDirectory.dir("dokka/html").orNull?.asFile)
-}
-
 runPaper {
     disablePluginJarDetection()
 }
@@ -30,9 +24,6 @@ tasks {
         version(minecraft)
     }
     build {
-        finalizedBy(
-            javadocJar
-        )
     }
     shadowJar {
         enabled = false

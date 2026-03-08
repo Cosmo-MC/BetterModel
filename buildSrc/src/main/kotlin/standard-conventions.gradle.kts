@@ -1,7 +1,6 @@
 plugins {
     java
     kotlin("jvm")
-    id("org.jetbrains.dokka")
     id("com.github.hierynomus.license")
 }
 
@@ -13,8 +12,6 @@ val shade = configurations.create("shade")
 configurations.implementation {
     extendsFrom(shade)
 }
-
-rootProject.dependencies.dokka(project)
 
 dependencies {
     testImplementation(kotlin("test"))
@@ -49,9 +46,3 @@ kotlin {
     jvmToolchain(JAVA_VERSION)
 }
 
-dokka {
-    moduleName = project.name
-    dokkaSourceSets.configureEach {
-        displayName = project.name
-    }
-}

@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SourcesJar
 import kotlin.io.encoding.Base64
 
@@ -17,7 +16,6 @@ val artifactVersion = project.version.toString().run {
 
 java {
     withSourcesJar()
-    withJavadocJar()
 }
 
 signing {
@@ -48,7 +46,6 @@ mavenPublishing {
     signAllPublications()
     coordinates("io.github.toxicity188", artifactBaseId, artifactVersion)
     configure(JavaLibrary(
-        javadocJar = JavadocJar.None(),
         sourcesJar = SourcesJar.Sources(),
     ))
     pom {
