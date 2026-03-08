@@ -12,14 +12,6 @@ dependencies {
     shade(project(":nms:v1_21_R7")) { isTransitive = false }
 }
 
-modrinth {
-    loaders = PAPER_LOADERS
-}
-
-tasks.modrinth {
-    dependsOn(tasks.modrinthSyncBody)
-}
-
 val generatePaperLibrary by tasks.registering {
     outputs.file(libraryDir)
     doLast {
@@ -48,28 +40,6 @@ paperPluginYaml {
     contributors = listOf("https://github.com/toxicity188/BetterModel/graphs/contributors")
     description = "Modern Bedrock model engine for Minecraft Java Edition"
     website = "https://modrinth.com/plugin/bettermodel"
-    dependencies {
-        server(
-            name = "MythicMobs",
-            required = false,
-            load = PaperPluginYaml.Load.BEFORE
-        )
-        server(
-            name = "Citizens",
-            required = false,
-            load = PaperPluginYaml.Load.BEFORE
-        )
-        server(
-            name = "SkinsRestorer",
-            required = false,
-            load = PaperPluginYaml.Load.BEFORE
-        )
-        server(
-            name = "Nexo",
-            required = false,
-            load = PaperPluginYaml.Load.OMIT
-        )
-    }
     permissions.create("bettermodel") {
         default = Permission.Default.OP
         description = "Accesses to command."

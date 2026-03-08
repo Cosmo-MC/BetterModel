@@ -1,10 +1,6 @@
-import io.papermc.hangarpublishplugin.model.Platforms
-
 plugins {
     alias(libs.plugins.convention.standard)
-    alias(libs.plugins.minotaur) apply false
     alias(libs.plugins.shadow)
-    alias(libs.plugins.hangar)
     id("xyz.jpenilla.run-paper") version "3.0.2"
 }
 
@@ -32,12 +28,6 @@ tasks {
             it.archiveFile
         })
         version(minecraft)
-        downloadPlugins {
-            hangar("ViaVersion", "5.7.2")
-            hangar("ViaBackwards", "5.7.2")
-            hangar("Skript", "2.14.2")
-            hangar("TabTPS", "1.3.30")
-        }
     }
     build {
         finalizedBy(
@@ -46,32 +36,5 @@ tasks {
     }
     shadowJar {
         enabled = false
-    }
-}
-
-hangarPublish {
-    publications.register("plugin") {
-        version = project.version as String
-        id = "BetterModel"
-        apiKey = System.getenv("HANGAR_API_TOKEN")
-        val log = System.getenv("COMMIT_MESSAGE")
-        if (log != null) {
-            changelog = log
-            channel = "Snapshot"
-        } else {
-            changelog = rootProject.file("changelog/$versionString.md").readText()
-            channel = "Release"
-        }
-        platforms {
-            register(Platforms.PAPER) {
-                jar = project(":platform:paper").tasks.shadowJar.flatMap {
-                    it.archiveFile
-                }
-                platformVersions = SUPPORTED_VERSIONS
-                dependencies {
-                    hangar("SkinsRestorer") { required = false }
-                }
-            }
-        }
     }
 }

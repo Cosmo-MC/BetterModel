@@ -1,6 +1,5 @@
 plugins {
     id("bukkit-conventions")
-    id("modrinth-conventions")
     id("com.gradleup.shadow")
 }
 
@@ -52,16 +51,5 @@ tasks {
         prefix("org.incendo.cloud")
         prefix("org.bstats")
         prefix("net.byteflux.libby")
-    }
-}
-
-modrinth {
-    uploadFile.set(tasks.shadowJar)
-    gameVersions = SUPPORTED_VERSIONS
-    dependencies {
-        optional.project(
-            "mythicmobs",
-            "skinsrestorer"
-        )
     }
 }
