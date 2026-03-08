@@ -6,7 +6,6 @@
  */
 package kr.toxicity.model.bukkit.util
 
-import kr.toxicity.model.bukkit.BetterModelPlugin
-import kr.toxicity.model.util.PLATFORM
+import kr.toxicity.model.bukkit.BetterModelBukkitContext
 
-val PLUGIN get() = PLATFORM as BetterModelPlugin
+val PLUGIN get() = BetterModelBukkitContext.plugin()
