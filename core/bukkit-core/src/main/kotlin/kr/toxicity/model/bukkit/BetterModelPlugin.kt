@@ -12,6 +12,8 @@ import kr.toxicity.model.api.BetterModelEvaluator
 import kr.toxicity.model.api.BetterModelLogger
 import kr.toxicity.model.api.BetterModelPlatform.ReloadResult
 import kr.toxicity.model.api.BetterModelPlatform.ReloadResult.*
+import kr.toxicity.model.api.pack.PackMeta
+import kr.toxicity.model.api.pack.PackResult
 import kr.toxicity.model.api.bukkit.BukkitModelEventBus
 import kr.toxicity.model.api.bukkit.scheduler.BukkitModelScheduler
 import kr.toxicity.model.api.manager.*
@@ -127,10 +129,7 @@ abstract class BetterModelPlugin : AbstractBetterModelPlugin() {
                 Success(
                     firstLoad.compareAndSet(false, true),
                     System.currentTimeMillis() - time,
-                    config().packType().toGenerator().create(zipper, pipeline.apply {
-                        status = "Generating files..."
-                        goal = zipper.size()
-                    })
+                    disabledPackResult()
                 )
             }
         }.getOrElse {
@@ -138,6 +137,25 @@ abstract class BetterModelPlugin : AbstractBetterModelPlugin() {
         }.apply {
             onReload.set(false)
         }.also(props.reloadEndTask)
+    }
+
+    private fun disabledPackResult(): PackResult {
+        deleteLegacyPackOutput()
+        return PackResult(
+            PackMeta.builder()
+                .description("BetterModel runtime payload.")
+                .build(),
+            null
+        ).apply {
+            freeze()
+        }
+    }
+
+    private fun deleteLegacyPackOutput() {
+        val buildFolder = File(dataFolder.parentFile, config().buildFolderLocation())
+        val zipFile = File(dataFolder.parentFile, "${config().buildFolderLocation()}.zip")
+        if (zipFile.exists()) zipFile.delete()
+        if (buildFolder.exists()) buildFolder.deleteRecursively()
     }
 
     override fun loadAssets(pipeline: ReloadPipeline, prefix: String, consumer: BiConsumer<String, InputStream>) {

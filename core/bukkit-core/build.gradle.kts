@@ -6,6 +6,8 @@ dependencies {
     shade(project(":api")) { isTransitive = false }
     shade(project(":api:bukkit-api")) { isTransitive = false }
     shade(project(":core")) { isTransitive = false }
+    shade("com.cosmomc:cosmo-pack-system:26.0.1") { isTransitive = false }
+    shade("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
     shade(project(":purpur"))
     rootProject.project("nms").subprojects.forEach {

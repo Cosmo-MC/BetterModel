@@ -21,12 +21,12 @@
 
 # ✨ Introduction
 
-**BetterModel** is a server-based engine that provides runtime BlockBench model rendering & animating for Minecraft Java Edition.
+**BetterModel** is a server-based runtime engine that consumes precompiled model payloads and renders/animates them in Minecraft Java Edition.
 
 It implements **fully server-side 3D models** by using an item display entity packet.
 
-- Importing Generic BlockBench model `.bbmodel`
-- Auto-generating resource pack
+- Loading precompiled model payloads
+- Consuming externally generated resource packs
 - Playing animation
 - Syncing with base entity
 - Custom hit box
@@ -57,7 +57,7 @@ BetterModel aims to be a reliable engine that provides stable, high-quality anim
 ## 🛠️ Build info
 
 [![](https://img.shields.io/badge/minecraft-1.21%7E1.21.11-8FCA5C)](https://www.minecraft.net/en-us/download/server)
-[![](https://img.shields.io/badge/java-21%7E-ED8B00)](https://adoptium.net/)
+[![](https://img.shields.io/badge/java-25-ED8B00)](https://adoptium.net/)
 
 #### Build
 [![](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/built-with/gradle_vector.svg)](https://gradle.org/)
@@ -225,8 +225,8 @@ dependencies {
 
 #### Gets some model or limb
 ```java
-BetterModel.model("demon_knight"); //A model file in BetterModel/models (for general model with saving)
-BetterModel.limb("steve"); //A model file in BetterModel/players (for player model with no saveing)
+BetterModel.model("demon_knight"); //A precompiled general model payload loaded by BetterModel
+BetterModel.limb("steve"); //A precompiled player limb payload loaded by BetterModel
 
 BetterModel.modelOrNull("demon_knight"); //general model or null
 BetterModel.limbOrNull("steve"); //player model or null

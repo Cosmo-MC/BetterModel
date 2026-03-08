@@ -53,11 +53,7 @@ class BetterModelConfigImpl(yaml: ConfigurationSection) : BetterModelConfig {
     }
     private val minSight = yaml.getDouble("min-sight", 5.0)
     private val namespace = yaml.getString("namespace") ?: "bettermodel"
-    private val packType = yaml.getString("pack-type")?.let {
-        runCatching {
-            BetterModelConfig.PackType.valueOf(it.uppercase())
-        }.getOrNull()
-    } ?: BetterModelConfig.PackType.ZIP
+    private val packType = BetterModelConfig.PackType.NONE
     private val buildFolderLocation = (yaml.getString("build-folder-location") ?: "BetterModel/build").replace('/', File.separatorChar)
     private val followMobInvisibility = yaml.getBoolean("follow-mob-invisibility", true)
     private val usePurpurAfk = yaml.getBoolean("use-purpur-afk", true)

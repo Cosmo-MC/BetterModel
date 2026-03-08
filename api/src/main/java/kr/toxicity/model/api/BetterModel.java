@@ -6,6 +6,7 @@
  */
 package kr.toxicity.model.api;
 
+import kr.toxicity.model.api.asset.CompiledModelProvider;
 import kr.toxicity.model.api.data.renderer.ModelRenderer;
 import kr.toxicity.model.api.entity.BaseEntity;
 import kr.toxicity.model.api.nms.NMS;
@@ -41,6 +42,7 @@ public final class BetterModel {
      * The singleton platform instance.
      */
     private static BetterModelPlatform instance;
+    private static CompiledModelProvider compiledModelProvider;
 
     /**
      * Returns the platform configuration manager.
@@ -242,6 +244,26 @@ public final class BetterModel {
      */
     public static @NotNull BetterModelEventBus eventBus() {
         return platform().eventBus();
+    }
+
+    /**
+     * Registers the provider used to load precompiled model payloads.
+     *
+     * @param provider the compiled model provider, or null to clear it
+     * @since 2.2.0
+     */
+    public static void compiledModelProvider(@Nullable CompiledModelProvider provider) {
+        compiledModelProvider = provider;
+    }
+
+    /**
+     * Returns the currently configured compiled model provider.
+     *
+     * @return the provider, or null if not configured
+     * @since 2.2.0
+     */
+    public static @Nullable CompiledModelProvider compiledModelProvider() {
+        return compiledModelProvider;
     }
 
     /**

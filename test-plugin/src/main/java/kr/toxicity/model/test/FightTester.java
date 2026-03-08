@@ -13,9 +13,6 @@ import kr.toxicity.model.api.animation.AnimationModifier;
 import kr.toxicity.model.api.bone.RenderedBone;
 import kr.toxicity.model.api.bukkit.BetterModelBukkit;
 import kr.toxicity.model.api.bukkit.platform.BukkitAdapter;
-import kr.toxicity.model.api.data.ModelAsset;
-import kr.toxicity.model.api.data.renderer.ModelRenderer;
-import kr.toxicity.model.api.event.ModelAssetsEvent;
 import kr.toxicity.model.api.event.PluginStartReloadEvent;
 import kr.toxicity.model.api.pack.PackNamespace;
 import kr.toxicity.model.api.platform.PlatformPlayer;
@@ -36,6 +33,10 @@ import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -47,6 +48,10 @@ import java.util.stream.Stream;
 import static java.lang.Math.*;
 
 public final class FightTester implements ModelTester, Listener {
+    @NotNull
+    private static final String COMPILED_MODELS_PROPERTY = "bettermodel.test.compiled-models";
+    @NotNull
+    private static final String COMPILED_MODELS_DIRECTORY = "compiled-models";
 
     @NotNull
     private static final NamespacedKey KNIGHT_SWORD_KEY = Objects.requireNonNull(NamespacedKey.fromString("knight_sword"));
@@ -72,16 +77,15 @@ public final class FightTester implements ModelTester, Listener {
             loadItem(path, "knight_sword");
             loadItem(path, "knight_line");
         });
-        BetterModelBukkit.platform().eventBus().subscribe(test, ModelAssetsEvent.class, event -> {
-            if (event.type() == ModelRenderer.Type.PLAYER) event.addAsset(ModelAsset.of(
-                "knight",
-                () -> Objects.requireNonNull(test.getResource("knight.bbmodel"))
-            ));
-        });
+        var provider = installLocalProvider(test);
+        if (provider != null) {
+            BetterModel.compiledModelProvider(provider);
+        }
     }
 
     @Override
     public void end(@NotNull BetterModelTest test) {
+        BetterModel.compiledModelProvider(null);
         HandlerList.unregisterAll(this);
     }
 
@@ -94,6 +98,63 @@ public final class FightTester implements ModelTester, Listener {
         var json = new JsonObject();
         json.add("model", model);
         path.items().add(itemName + ".json", () -> json.toString().getBytes(StandardCharsets.UTF_8));
+    }
+
+    private LocalCompiledModelProvider installLocalProvider(@NotNull BetterModelTest test) {
+        var targetDirectory = test.getDataFolder().toPath().resolve(COMPILED_MODELS_DIRECTORY);
+        try {
+            Files.createDirectories(targetDirectory);
+            copyWorkspaceFixtures(targetDirectory);
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to prepare local compiled model directory: " + targetDirectory, e);
+        }
+        if (!containsCompiledModels(targetDirectory)) {
+            test.getLogger().warning("No compiled model fixtures found. Run CosmoPackSystem first or set -D" + COMPILED_MODELS_PROPERTY + "=<path>.");
+            return null;
+        }
+        test.getLogger().info("Loading compiled model fixtures from " + targetDirectory.toAbsolutePath());
+        return new LocalCompiledModelProvider(targetDirectory);
+    }
+
+    private void copyWorkspaceFixtures(@NotNull Path targetDirectory) throws IOException {
+        var sourceDirectory = locateCompiledModelsSource();
+        if (sourceDirectory == null || !Files.isDirectory(sourceDirectory)) {
+            return;
+        }
+        try (var stream = Files.list(sourceDirectory)) {
+            for (var source : stream.filter(Files::isRegularFile).filter(path -> path.getFileName().toString().endsWith(".json")).toList()) {
+                Files.copy(
+                    source,
+                    targetDirectory.resolve(source.getFileName().toString()),
+                    StandardCopyOption.REPLACE_EXISTING
+                );
+            }
+        }
+    }
+
+    private Path locateCompiledModelsSource() {
+        var configured = System.getProperty(COMPILED_MODELS_PROPERTY);
+        if (configured != null && !configured.isBlank()) {
+            return Path.of(configured);
+        }
+        var cwd = Path.of("").toAbsolutePath().normalize();
+        var siblingBuild = cwd.resolveSibling("CosmoPackSystem").resolve("build").resolve("local-pack-test").resolve("models");
+        if (Files.isDirectory(siblingBuild)) {
+            return siblingBuild;
+        }
+        var nestedBuild = cwd.resolve("..").resolve("CosmoPackSystem").resolve("build").resolve("local-pack-test").resolve("models").normalize();
+        if (Files.isDirectory(nestedBuild)) {
+            return nestedBuild;
+        }
+        return null;
+    }
+
+    private boolean containsCompiledModels(@NotNull Path directory) {
+        try (var stream = Files.list(directory)) {
+            return stream.anyMatch(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".json"));
+        } catch (IOException e) {
+            throw new IllegalStateException("Unable to inspect local compiled model directory: " + directory, e);
+        }
     }
 
     @EventHandler

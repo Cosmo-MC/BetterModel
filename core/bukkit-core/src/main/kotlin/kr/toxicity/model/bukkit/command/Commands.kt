@@ -269,14 +269,14 @@ private fun reload(context: CommandContext<Audience>) {
                     "Reload completed. (${result.totalTime().withComma()}ms)".toComponent(GREEN),
                     "Assets reload time - ${result.assetsTime().withComma()}ms".toComponent {
                         color(GRAY)
-                        hoverEvent("Reading all config and model.".toComponent().toHoverEvent())
+                        hoverEvent("Reading config and compiled model payloads.".toComponent().toHoverEvent())
                     },
-                    "Packing time - ${result.packingTime().withComma()}ms".toComponent {
+                    "Runtime finalize time - ${result.packingTime().withComma()}ms".toComponent {
                         color(GRAY)
-                        hoverEvent("Packing all model to resource pack.".toComponent().toHoverEvent())
+                        hoverEvent("Finalizing BetterModel runtime state without generating a resource pack.".toComponent().toHoverEvent())
                     },
-                    "${BetterModel.models().size.withComma()} of models are loaded successfully. (${result.length().toByteFormat()})".toComponent(YELLOW),
-                    (if (result.packResult.changed()) "${result.packResult.size().withComma()} of files are zipped." else "Zipping is skipped due to the same result.").toComponent(YELLOW),
+                    "${BetterModel.models().size.withComma()} general model(s) and ${BetterModel.limbs().size.withComma()} limb model(s) are loaded successfully.".toComponent(YELLOW),
+                    "Resource pack generation is disabled in BetterModel; use CosmoPackSystem output instead.".toComponent(YELLOW),
                     emptyComponentOf()
                 )
             }

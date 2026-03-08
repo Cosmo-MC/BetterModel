@@ -20,12 +20,12 @@
 
 # ✨ What is BetterModel?
 
-**BetterModel** is a server-based engine that provides runtime BlockBench model rendering & animating for Minecraft Java Edition.  
+**BetterModel** is a server-based engine that provides runtime compiled-model rendering & animating for Minecraft Java Edition.  
 
 It implements **fully server-side 3D models** by using an item display entity packet.
 
-- Importing Generic BlockBench model `.bbmodel`
-- Auto-generating resource pack
+- Loading precompiled model payloads
+- Consuming externally generated resource packs
 - Playing animation
 - Syncing with base entity
 - Custom hit box
@@ -70,7 +70,7 @@ BetterModel supports **player model with using user's custom skin without textur
 ## 🏗️ Supported environment
 
 [![](https://img.shields.io/badge/minecraft-1.21%7E1.21.11-8FCA5C?style=for-the-badge)](https://www.minecraft.net/en-us/download/server)
-[![](https://img.shields.io/badge/java-21%7E-ED8B00?style=for-the-badge)](https://adoptium.net/)
+[![](https://img.shields.io/badge/java-25-ED8B00?style=for-the-badge)](https://adoptium.net/)
 
 ### Bukkit
 [![](https://img.shields.io/badge/folia-supported-blue?style=for-the-badge)](https://papermc.io/downloads/folia)

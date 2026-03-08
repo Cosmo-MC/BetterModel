@@ -28,13 +28,14 @@ module:
   # Enables player-specific animations and models (e.g., custom limbs).
   player-animation: true
 
-# Resource pack generation settings.
+# Legacy resource pack settings.
+# BetterModel no longer generates model resource packs. Keep pack creation in CosmoPackSystem.
 pack:
-  # Generates models compatible with modern Minecraft versions (>=1.21.4).
+  # Legacy option kept only for backwards-compatible config parsing.
   generate-modern-model: true
-  # Generates models compatible with legacy Minecraft versions (<=1.21.3).
+  # Legacy option kept only for backwards-compatible config parsing.
   generate-legacy-model: true
-  # Obfuscates model and texture names in the resource pack to prevent easy extraction.
+  # Legacy option kept only for backwards-compatible config parsing.
   use-obfuscation: true
 
 # Toggles metrics collection via bStats (https://bstats.org/plugin/bukkit/BetterModel/24237).
@@ -44,7 +45,7 @@ metrics: true
 # Enables sight-trace culling: models are only rendered if there is a clear line of sight.
 sight-trace: true
 
-# Merges the generated resource pack with packs from other plugins.
+# Legacy option. BetterModel no longer merges or generates a resource pack.
 merge-with-external-resources: true
 
 # The base item used for custom model data.
@@ -59,15 +60,13 @@ max-sight: -1
 # Minimum distance (in blocks) before animation packets are sent.
 min-sight: 5
 
-# The namespace used for resource pack assets (e.g., assets/bettermodel/...).
+# The namespace used by BetterModel runtime identifiers.
 namespace: "bettermodel"
 
-# The format of the generated resource pack.
-# 'zip': A standard .zip file.
-# 'folder': A raw folder structure (useful for merging or debugging).
-pack-type: zip
+# Legacy option. Ignored because BetterModel no longer generates a resource pack.
+pack-type: none
 
-# The location where the resource pack file or folder will be generated, relative to the server root.
+# Legacy option. Ignored because BetterModel no longer generates a resource pack.
 build-folder-location: BetterModel/build
 
 # If enabled, models attached to invisible mobs will also be invisible.
