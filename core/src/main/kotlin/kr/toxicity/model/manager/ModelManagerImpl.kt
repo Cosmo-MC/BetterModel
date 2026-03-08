@@ -7,33 +7,26 @@
 package kr.toxicity.model.manager
 
 import com.cosmomc.packsystem.model.Model
-import com.cosmomc.packsystem.model.animation.ModelAnimation
-import com.cosmomc.packsystem.model.animation.ModelAnimationChannel
-import com.cosmomc.packsystem.model.animation.ModelAnimationDatapoint
-import com.cosmomc.packsystem.model.animation.ModelAnimationFormatVersion
-import com.cosmomc.packsystem.model.animation.ModelAnimationInterpolator
-import com.cosmomc.packsystem.model.animation.ModelAnimationKeyframe
-import com.cosmomc.packsystem.model.animation.ModelAnimationScript
+import com.cosmomc.packsystem.model.ModelType
+import com.cosmomc.packsystem.model.animation.*
 import com.cosmomc.packsystem.model.bone.ModelBone
 import com.cosmomc.packsystem.model.bone.ModelBoneAnimation
 import com.cosmomc.packsystem.model.bone.ModelBoneType
-import com.cosmomc.packsystem.model.ModelType
 import com.cosmomc.packsystem.model.geometry.ModelHitBox
 import com.cosmomc.packsystem.model.geometry.ModelVector3
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromStream
 import kr.toxicity.model.api.BetterModel
 import kr.toxicity.model.api.animation.AnimationIterator
 import kr.toxicity.model.api.animation.AnimationProgress
 import kr.toxicity.model.api.animation.VectorPoint
 import kr.toxicity.model.api.bone.BoneItemMapper
 import kr.toxicity.model.api.bone.BoneName
-import kr.toxicity.model.api.bone.BoneTags
 import kr.toxicity.model.api.bone.BoneRenderContext
+import kr.toxicity.model.api.bone.BoneTags
 import kr.toxicity.model.api.data.Float3
-import kr.toxicity.model.api.data.blueprint.AnimationGenerator
-import kr.toxicity.model.api.data.blueprint.BlueprintAnimation
-import kr.toxicity.model.api.data.blueprint.BlueprintAnimator
-import kr.toxicity.model.api.data.blueprint.BlueprintElement
-import kr.toxicity.model.api.data.blueprint.ModelBoundingBox
+import kr.toxicity.model.api.data.blueprint.*
 import kr.toxicity.model.api.data.renderer.ModelRenderer
 import kr.toxicity.model.api.data.renderer.RendererGroup
 import kr.toxicity.model.api.manager.ModelManager
@@ -46,23 +39,12 @@ import kr.toxicity.model.api.util.InterpolationUtil
 import kr.toxicity.model.api.util.function.Float2FloatFunction
 import kr.toxicity.model.api.util.function.FloatFunction
 import kr.toxicity.model.api.util.interpolator.VectorInterpolator
-import kr.toxicity.model.util.CONFIG
-import kr.toxicity.model.util.DATA_FOLDER
-import kr.toxicity.model.util.PLATFORM
-import kr.toxicity.model.util.getOrCreateDirectory
-import kr.toxicity.model.util.info
-import kr.toxicity.model.util.toComponent
-import kr.toxicity.model.util.toImmutableView
-import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromStream
+import kr.toxicity.model.util.*
+import org.joml.Vector3f
 import java.nio.file.Files
-import java.util.LinkedHashMap
-import java.util.SequencedMap
-import java.util.UUID
+import java.util.*
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
-import org.joml.Vector3f
 
 object ModelManagerImpl : ModelManager, GlobalManager {
 

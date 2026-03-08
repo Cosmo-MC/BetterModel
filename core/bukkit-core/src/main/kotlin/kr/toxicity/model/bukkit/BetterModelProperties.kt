@@ -14,7 +14,8 @@ import kr.toxicity.model.api.bukkit.BetterModelBukkit
 import kr.toxicity.model.api.event.PluginEndReloadEvent
 import kr.toxicity.model.api.event.PluginStartReloadEvent
 import kr.toxicity.model.api.pack.PackZipper
-import kr.toxicity.model.api.version.MinecraftVersion.*
+import kr.toxicity.model.api.version.MinecraftVersion.V1_21_11
+import kr.toxicity.model.api.version.MinecraftVersion.parse
 import kr.toxicity.model.bukkit.configuration.PluginConfiguration
 import kr.toxicity.model.bukkit.manager.EntityManager
 import kr.toxicity.model.bukkit.manager.PlayerManagerImpl
