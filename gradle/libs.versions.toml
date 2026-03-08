@@ -80,13 +80,11 @@ shadedLibrary = [
 
 [plugins]
 resourcefactory-bukkit = { id = "xyz.jpenilla.resource-factory-bukkit-convention" }
-resourcefactory-paper = { id = "xyz.jpenilla.resource-factory-paper-convention" }
 paperweight = { id = "io.papermc.paperweight.userdev", version.ref = "paperweight" }
 
 shadow = { id = "com.gradleup.shadow" }
 
 convention-publish = { id = "publish-conventions" }
-convention-plugin = { id = "plugin-conventions" }
 convention-standard = { id = "standard-conventions" }
 convention-bukkit = { id = "bukkit-conventions" }
 convention-paperweight = { id = "paperweight-conventions" }
