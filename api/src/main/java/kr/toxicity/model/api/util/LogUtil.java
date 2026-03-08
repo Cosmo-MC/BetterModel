@@ -42,7 +42,7 @@ public final class LogUtil {
         var list = new ArrayList<Component>(4);
         list.add(Component.text(message));
         list.add(toLog("Reason: " + throwable.getMessage(), NamedTextColor.YELLOW));
-        if (BetterModel.config().debug().has(DebugConfig.DebugOption.EXCEPTION)) {
+        if (hasDebugOption(DebugConfig.DebugOption.EXCEPTION)) {
             list.add(toLog("Stack trace:", NamedTextColor.RED));
             try (
                 var byteArray = new ByteArrayOutputStream();
@@ -54,7 +54,7 @@ public final class LogUtil {
                 list.add(toLog("Unknown", NamedTextColor.RED));
             }
         } else list.add(toLog("If you want to see the stack trace, set debug.exception to true in config.yml", NamedTextColor.LIGHT_PURPLE));
-        BetterModel.platform().logger().warn(list.toArray(Component[]::new));
+        warn(list.toArray(Component[]::new), throwable);
     }
 
     /**
@@ -86,6 +86,23 @@ public final class LogUtil {
      * @param runnable debug task
      */
     public static void debug(@NotNull DebugConfig.DebugOption option, @NotNull Runnable runnable) {
-        if (BetterModel.config().debug().has(option)) runnable.run();
+        if (hasDebugOption(option)) runnable.run();
+    }
+
+    private static boolean hasDebugOption(@NotNull DebugConfig.DebugOption option) {
+        try {
+            return BetterModel.config().debug().has(option);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    private static void warn(@NotNull Component[] components, @NotNull Throwable throwable) {
+        try {
+            BetterModel.platform().logger().warn(components);
+        } catch (Throwable ignored) {
+            System.err.println("[BetterModel] " + components[0]);
+            throwable.printStackTrace();
+        }
     }
 }

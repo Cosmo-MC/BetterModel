@@ -12,6 +12,7 @@ build/
 
 ### Kotlin ###
 .kotlin
+.env
 
 ### Eclipse ###
 .apt_generated
