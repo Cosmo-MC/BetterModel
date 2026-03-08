@@ -60,14 +60,6 @@ public interface BetterModelConfig {
     @NotNull PackConfig pack();
 
     /**
-     * Checks if metrics collection is enabled.
-     *
-     * @return true if enabled, false otherwise
-     * @since 1.15.2
-     */
-    boolean metrics();
-
-    /**
      * Checks if sight tracing (visibility checking) is enabled.
      *
      * @return true if enabled, false otherwise

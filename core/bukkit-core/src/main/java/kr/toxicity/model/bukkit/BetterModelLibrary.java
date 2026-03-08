@@ -30,14 +30,6 @@ public final class BetterModelLibrary {
         KOTLIN_RELOCATED + "-stdlib",
         builder -> builder.relocation(KOTLIN_RELOCATED)
     );
-    public static final LibraryData BSTATS = register(
-        "org{}bstats",
-        "bstats-bukkit",
-        builder -> builder.relocation("org{}bstats")
-            .subModules(
-                "bstats-base"
-            )
-    );
     public static final LibraryData CLOUD = register(
         "org{}incendo",
         "cloud-paper",
@@ -115,14 +107,17 @@ public final class BetterModelLibrary {
         builder -> builder.predicate(BooleanConstantSupplier.of(!BetterModelBukkit.IS_PAPER))
     );
 
-    public void load(@NotNull AbstractBetterModelPlugin plugin) {
-        var manager = new BetterModelLibraryManager(plugin);
+    public void load(@NotNull BetterModelBootstrapHost host) {
+        if (LIBRARY_DATA.stream().noneMatch(library -> host.attributes().getValue("library-" + library.versionRef()) != null)) {
+            return;
+        }
+        var manager = new BetterModelLibraryManager(host.getPlugin());
         manager.addRepository("https://maven-central.storage-download.googleapis.com/maven2/");
         manager.addRepository("https://maven.blamejared.com/");
         manager.addMavenCentral();
         LIBRARY_DATA.stream()
             .filter(LibraryData::isLoaded)
-            .flatMap(library -> library.toLibby(plugin))
+            .flatMap(library -> library.toLibby(host))
             .forEach(manager::loadLibrary);
     }
 
@@ -190,8 +185,11 @@ public final class BetterModelLibrary {
             return predicate.getAsBoolean();
         }
 
-        private @NotNull Stream<Library> toLibby(@NotNull AbstractBetterModelPlugin plugin) {
-            var version = plugin.attributes().getValue("library-" + versionRef);
+        private @NotNull Stream<Library> toLibby(@NotNull BetterModelBootstrapHost host) {
+            var version = host.attributes().getValue("library-" + versionRef);
+            if (version == null || version.isBlank()) {
+                return Stream.empty();
+            }
             return Stream.concat(
                 Stream.of(artifact),
                 subModules.stream()

@@ -38,7 +38,6 @@ class BetterModelConfigImpl(yaml: ConfigurationSection) : BetterModelConfig {
     private val pack = yaml.getConfigurationSection("pack")?.let {
         PackConfig.from(it::getBoolean)
     } ?: PackConfig.DEFAULT
-    private val metrics = yaml.getBoolean("metrics", true)
     private val sightTrace = yaml.getBoolean("sight-trace", true)
     private val mergeWithExternalResources = yaml.getBoolean("merge-with-external-resources", true)
     private val itemModel = yaml.getString("item")?.let {
@@ -77,7 +76,6 @@ class BetterModelConfigImpl(yaml: ConfigurationSection) : BetterModelConfig {
     override fun item(): Supplier<PlatformItemStack> = item
     override fun itemModel(): String = itemModel.name
     override fun itemNamespace(): String = itemNamespace
-    override fun metrics(): Boolean = metrics
     override fun sightTrace(): Boolean = sightTrace
     override fun mergeWithExternalResources(): Boolean = mergeWithExternalResources
     override fun maxSight(): Double = maxSight

@@ -26,16 +26,14 @@ import kr.toxicity.model.util.callEvent
 import kr.toxicity.model.util.handleException
 import kr.toxicity.model.util.toComponent
 import kr.toxicity.model.util.warn
-import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 
 private typealias Latest = kr.toxicity.model.bukkit.nms.v1_21_R7.NMSImpl
 
 internal class BetterModelProperties(
-    private val plugin: AbstractBetterModelPlugin
+    private val host: BetterModelBootstrapHost
 ) {
     private lateinit var _config: BetterModelConfig
-    private var _metrics: Metrics? = null
 
     val version = parse(Bukkit.getBukkitVersion().substringBefore('-'))
     val nms = when (version) {
@@ -53,9 +51,9 @@ internal class BetterModelProperties(
     val evaluator = BetterModelEvaluatorImpl()
     val eventbus = BukkitModelEventBusImpl()
     @Suppress("DEPRECATION") //To support Spigot :(
-    val semver = Semver(plugin.description.version, Semver.SemverType.LOOSE)
+    val semver = Semver(host.plugin.description.version, Semver.SemverType.LOOSE)
     val snapshot = runCatching {
-        plugin.attributes().getValue("Dev-Build").toInt()
+        host.attributes().getValue("Dev-Build").toInt()
     }.getOrElse {
         it.handleException("Unable to parse manifest's build data")
         -1
@@ -63,14 +61,7 @@ internal class BetterModelProperties(
     var config
         get() = _config
         set(value) {
-            _config = value.apply {
-                if (metrics()) {
-                    if (_metrics == null) _metrics = Metrics(plugin, 24237)
-                } else {
-                    _metrics?.shutdown()
-                    _metrics = null
-                }
-            }
+            _config = value
         }
     val managers by lazy {
         listOf(

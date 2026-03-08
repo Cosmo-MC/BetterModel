@@ -87,7 +87,6 @@ BetterModel supports **player model with using user's custom skin without textur
 [![](https://discord.com/api/guilds/1012718460297551943/widget.png?style=banner2)](https://discord.com/invite/rePyFESDbk)
 
 ## 📊 Project Stats (plugin)
-[![](https://bstats.org/signatures/bukkit/BetterModel.svg)](https://bstats.org/plugin/bukkit/BetterModel/24237)
 
 ## 💖 Support my project
 [![](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/donate/buymeacoffee-singular_vector.svg)](https://buymeacoffee.com/toxicity188)

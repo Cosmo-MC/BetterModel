@@ -38,10 +38,6 @@ pack:
   # Legacy option kept only for backwards-compatible config parsing.
   use-obfuscation: true
 
-# Toggles metrics collection via bStats (https://bstats.org/plugin/bukkit/BetterModel/24237).
-# Disabling this helps us less to improve the plugin.
-metrics: true
-
 # Enables sight-trace culling: models are only rendered if there is a clear line of sight.
 sight-trace: true
 
