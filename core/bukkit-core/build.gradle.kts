@@ -8,7 +8,7 @@ dependencies {
     shade(project(":api")) { isTransitive = false }
     shade(project(":api:bukkit-api")) { isTransitive = false }
     shade(project(":core")) { isTransitive = false }
-    shade("com.cosmomc:cosmo-pack-system-api:26.2.0") { isTransitive = false }
+    shade("com.cosmomc:cosmo-pack-system-api:26.3.3") { isTransitive = false }
     shade("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
     shade(project(":purpur"))
