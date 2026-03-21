@@ -842,4 +842,8 @@ object SkinManagerImpl : SkinManager, GlobalManager {
             it.value.refresh()
         }
     }
+
+    override fun end() {
+        profileCache.cleanUp()
+    }
 }
