@@ -33,7 +33,6 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-    id("fabric-loom") version "1.15-SNAPSHOT"
 }
 
 dependencyResolutionManagement {

@@ -14,13 +14,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import static kr.toxicity.model.api.util.CollectionUtil.newAddressingMap;
+
 /**
  * Bone tag registry
  */
 public final class BoneTagRegistry {
 
     private static final String TAG_SPLITTER = "_";
-    private final Object2ObjectMap<String, BoneTag> byName = new Object2ObjectOpenHashMap<>();
+    private final Object2ObjectMap<String, BoneTag> byName = newAddressingMap();
 
     BoneTagRegistry() {
         for (BoneTags value : BoneTags.values()) {

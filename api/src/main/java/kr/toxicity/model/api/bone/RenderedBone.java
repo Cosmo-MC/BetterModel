@@ -8,6 +8,7 @@ package kr.toxicity.model.api.bone;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import kr.toxicity.model.api.BetterModel;
 import kr.toxicity.model.api.animation.*;
 import kr.toxicity.model.api.data.blueprint.BlueprintAnimation;
@@ -342,7 +343,7 @@ public final class RenderedBone implements BoneEventHandler {
         if (d != null) d.sendEntityData(!d.invisible(), bundler);
     }
 
-    public void sendTransformation(@Nullable UUID uuid, @NotNull PacketBundler bundler) {
+    public void sendTransformation(@Nullable UUID uuid, @NotNull AnimationBundler bundler) {
         state(uuid).sendTransformation(bundler);
     }
 
@@ -480,7 +481,7 @@ public final class RenderedBone implements BoneEventHandler {
                 Stream.of(this),
                 Arrays.stream(children).flatMap(RenderedBone::flatten)
             ).collect(Collectors.collectingAndThen(
-                Collectors.toCollection(LinkedHashSet::new),
+                Collectors.toCollection(ObjectLinkedOpenHashSet::new),
                 Collections::unmodifiableSequencedSet
             ));
         }
@@ -606,7 +607,7 @@ public final class RenderedBone implements BoneEventHandler {
             return Math.round(frame + MathUtil.FLOAT_COMPARISON_EPSILON);
         }
 
-        private void sendTransformation(@NotNull PacketBundler bundler) {
+        private void sendTransformation(@NotNull AnimationBundler bundler) {
             if (!updateCurrent.compareAndSet(true, false)) return;
             var after = after();
             var movement = lock.accessToWriteLock(() -> current.set(after));

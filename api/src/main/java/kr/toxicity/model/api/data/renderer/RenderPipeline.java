@@ -10,6 +10,7 @@ import kr.toxicity.model.api.BetterModel;
 import kr.toxicity.model.api.animation.AnimationOverrideState;
 import kr.toxicity.model.api.animation.RunningAnimation;
 import kr.toxicity.model.api.bone.*;
+import kr.toxicity.model.api.nms.AnimationBundler;
 import kr.toxicity.model.api.nms.HitBox;
 import kr.toxicity.model.api.nms.PacketBundler;
 import kr.toxicity.model.api.nms.PlayerChannelHandler;
@@ -94,8 +95,8 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
         this.bones = bones;
         // Bone
         flattenBones = Arrays.stream(bones).flatMap(RenderedBone::flatten).toArray(RenderedBone[]::new);
-        byIdMap = associateSequenced(Arrays.stream(flattenBones), RenderedBone::name);
-        ikSolver = new BoneIKSolver(associate(Arrays.stream(flattenBones), RenderedBone::uuid));
+        byIdMap = associateSequenced(flattenBones, RenderedBone::name);
+        ikSolver = new BoneIKSolver(associate(flattenBones, RenderedBone::uuid));
         // Setup
         displayAmount = (int) Arrays.stream(flattenBones)
             .peek(bone -> bone.extend(this))
@@ -127,14 +128,18 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
     }
 
     /**
-     * Creates a parallel packet bundler based on configuration.
+     * Creates an animation packet bundler based on configuration.
      *
-     * @return a new parallel packet bundler
-     * @since 1.15.2
+     * @return a new animation packet bundler
+     * @since 2.2.1
      */
-    public @NotNull PacketBundler createParallelBundler() {
+    public @NotNull AnimationBundler createAnimationBundler() {
         var size = BetterModel.config().packetBundlingSize();
-        return size <= 0 ? createBundler() : BetterModel.nms().createParallelBundler(size);
+        var nms = BetterModel.nms();
+        return new AnimationBundler(
+            size <= 0 ? createBundler() : nms.createParallelBundler(size),
+            nms.createModAnimationBuilder(displayAmount)
+        );
     }
 
     @Override
@@ -242,7 +247,7 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
         hitboxes().forEach(HitBox::removeHitBox);
         var bundler = createBundler();
         remove0(bundler);
-        if (bundler.isNotEmpty()) allPlayer().forEach(bundler::send);
+        if (bundler.isNotEmpty()) allPlayer().map(PlayerChannelHandler::player).forEach(bundler::send);
         playerMap.clear();
     }
 
@@ -267,7 +272,7 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
      * @return true if any updates occurred
      * @since 1.15.2
      */
-    public boolean tick(@NotNull PacketBundler bundler) {
+    public boolean tick(@NotNull AnimationBundler bundler) {
         var match = matchTree(RenderedBone::tick);
         if (match) {
             ikSolver.solve();
@@ -284,7 +289,7 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
      * @return true if any updates occurred
      * @since 1.15.2
      */
-    public boolean tick(@NotNull UUID uuid, @NotNull PacketBundler bundler) {
+    public boolean tick(@NotNull UUID uuid, @NotNull AnimationBundler bundler) {
         var match = matchTree(b -> b.tick(uuid));
         if (match) {
             ikSolver.solve(uuid);
@@ -501,10 +506,10 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
      * @return the stream of players
      * @since 1.15.2
      */
-    public @NotNull Stream<PlatformPlayer> allPlayer() {
+    public @NotNull Stream<PlayerChannelHandler> allPlayer() {
         return playerMap.values()
             .stream()
-            .map(spawned -> spawned.handler.player());
+            .map(spawned -> spawned.handler);
     }
 
     /**
@@ -513,12 +518,12 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
      * @return the stream of visible players
      * @since 1.15.2
      */
-    public @NotNull Stream<PlatformPlayer> nonHidePlayer() {
+    public @NotNull Stream<PlayerChannelHandler> nonHidePlayer() {
         return playerMap.values()
             .stream()
             .filter(spawned -> spawned.initialLoad)
-            .map(spawned -> spawned.handler.player())
-            .filter(p -> !hideFilter.test(p));
+            .map(spawned -> spawned.handler)
+            .filter(p -> !hideFilter.test(p.player()));
     }
 
     /**
@@ -527,8 +532,8 @@ public final class RenderPipeline implements BoneEventHandler, Iterable<Rendered
      * @return the stream of viewed players
      * @since 1.15.2
      */
-    public @NotNull Stream<PlatformPlayer> viewedPlayer() {
-        return allPlayer().filter(viewFilter);
+    public @NotNull Stream<PlayerChannelHandler> viewedPlayer() {
+        return allPlayer().filter(channel -> viewFilter.test(channel.player()));
     }
 
     /**
