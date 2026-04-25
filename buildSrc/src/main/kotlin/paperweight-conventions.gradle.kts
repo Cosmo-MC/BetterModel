@@ -4,6 +4,6 @@ plugins {
 }
 
 dependencies {
-    compileOnly(project(":bettermodel-api"))
-    compileOnly(project(":bettermodel-api:bettermodel-bukkit-api"))
+    compileOnly(project(":api"))
+    compileOnly(project(":api:bukkit-api"))
 }

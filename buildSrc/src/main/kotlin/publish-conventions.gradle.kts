@@ -1,30 +1,31 @@
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SourcesJar
-import kotlin.io.encoding.Base64
-
 plugins {
     id("standard-conventions")
-    id("com.vanniktech.maven.publish")
-    signing
+    `maven-publish`
 }
 
-val artifactBaseId = name
-val artifactVersion = project.version.toString().run {
-    BUILD_NUMBER?.let { substringBeforeLast("-$it") } ?: this
+val artifactBaseId = "${rootProject.name.lowercase()}-$name"
+val artifactVersion = project.version.toString()
+
+java {
+    withSourcesJar()
 }
 
-signing {
-    val key = System.getenv("SIGNING_KEY")?.let {
-        Base64.decode(it.toByteArray()).toString(Charsets.UTF_8)
-    }
-    val password = System.getenv("SIGNING_PASSWORD")
-    if (!key.isNullOrEmpty() && !password.isNullOrEmpty()) {
-        useInMemoryPgpKeys(
-            key,
-            password
-        )
-    } else useGpgCmd()
+fun Project.settingValue(key: String): String? {
+    val envValue = System.getenv(key)?.takeIf { it.isNotBlank() }
+    if (envValue != null) return envValue
+    val envFile = rootProject.file(".env")
+    if (!envFile.exists()) return null
+    return envFile.readLines()
+        .asSequence()
+        .map(String::trim)
+        .filter { it.isNotEmpty() && !it.startsWith("#") && '=' in it }
+        .map {
+            val index = it.indexOf('=')
+            it.substring(0, index).trim() to it.substring(index + 1).trim().trim('"')
+        }
+        .firstOrNull { (name, _) -> name == key }
+        ?.second
+        ?.takeIf { it.isNotBlank() }
 }
 
 dependencies {
@@ -37,48 +38,32 @@ dependencies {
     testAnnotationProcessor(libs.lombok)
 }
 
-mavenPublishing {
-    publishToMavenCentral()
-    signAllPublications()
-    coordinates("io.github.toxicity188", artifactBaseId, artifactVersion)
-    configure(JavaLibrary(
-        javadocJar = JavadocJar.Javadoc(),
-        sourcesJar = SourcesJar.Sources(),
-    ))
-    pom {
-        name = artifactBaseId
-        description = "Modern Bedrock model engine for Minecraft Java Edition"
-        inceptionYear = "2024"
-        url = "https://github.com/toxicity188/BetterModel/"
-        licenses {
-            license {
-                name = "MIT License"
-                url = "https://mit-license.org/"
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            groupId = "com.cosmomc"
+            artifactId = artifactBaseId
+            version = artifactVersion
+
+            pom {
+                name = artifactBaseId
+                description = "BetterModel runtime and platform modules"
             }
-        }
-        developers {
-            developer {
-                id = "toxicity188"
-                name = "toxicity188"
-                url = "https://github.com/toxicity188/"
-            }
-        }
-        scm {
-            url = "https://github.com/toxicity188/BetterModel/"
-            connection = "scm:git:git://github.com/toxicity188/BetterModel.git"
-            developerConnection = "scm:git:ssh://git@github.com/toxicity188/BetterModel.git"
         }
     }
-}
 
-publishing {
     repositories {
         maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/toxicity188/${rootProject.name}")
+            name = "cosmomc"
+            url = uri(settingValue("COSMO_REPO_URL") ?: "https://repo.cosmomcinfra.com/private")
+
             credentials {
-                username = "toxicity188"
-                password = System.getenv("PACKAGES_API_TOKEN")
+                username = settingValue("MAVEN_USERNAME") ?: ""
+                password = settingValue("MAVEN_PASSWORD") ?: ""
+            }
+            authentication {
+                create<BasicAuthentication>("basic")
             }
         }
     }

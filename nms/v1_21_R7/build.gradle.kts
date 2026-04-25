@@ -10,9 +10,9 @@ dependencies {
 
 tasks {
     compileJava {
-        options.release = 21
+        options.release = 25
     }
     compileKotlin {
-        compilerOptions.jvmTarget = JvmTarget.JVM_21
+        compilerOptions.jvmTarget = JvmTarget.JVM_25
     }
 }

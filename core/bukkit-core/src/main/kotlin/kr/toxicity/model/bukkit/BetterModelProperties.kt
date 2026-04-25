@@ -1,10 +1,9 @@
-/*
+/**
  * This source file is part of BetterModel.
- * Copyright (c) 2026 toxicity188
+ * Copyright (c) 2024–2026 toxicity188
  * Licensed under the MIT License.
  * See LICENSE.md file for full license text.
  */
-
 package kr.toxicity.model.bukkit
 
 import kr.toxicity.model.BetterModelEvaluatorImpl
@@ -14,50 +13,48 @@ import kr.toxicity.model.api.bukkit.BetterModelBukkit
 import kr.toxicity.model.api.event.PluginEndReloadEvent
 import kr.toxicity.model.api.event.PluginStartReloadEvent
 import kr.toxicity.model.api.pack.PackZipper
-import kr.toxicity.model.api.version.MinecraftVersion.*
+import kr.toxicity.model.api.version.MinecraftVersion.V1_21_11
+import kr.toxicity.model.api.version.MinecraftVersion.parse
 import kr.toxicity.model.bukkit.configuration.PluginConfiguration
-import kr.toxicity.model.bukkit.manager.CompatibilityManager
 import kr.toxicity.model.bukkit.manager.EntityManager
 import kr.toxicity.model.bukkit.manager.PlayerManagerImpl
 import kr.toxicity.model.bukkit.scheduler.BukkitScheduler
 import kr.toxicity.model.bukkit.scheduler.PaperScheduler
 import kr.toxicity.model.manager.*
-import kr.toxicity.model.util.*
-import org.bstats.bukkit.Metrics
+import kr.toxicity.model.util.callEvent
+import kr.toxicity.model.util.handleException
+import kr.toxicity.model.util.ifNull
+import kr.toxicity.model.util.toComponent
+import kr.toxicity.model.util.warn
 import org.bukkit.Bukkit
 import org.semver4j.Semver
 
-private typealias Latest = kr.toxicity.model.bukkit.nms.v26_R1.NMSImpl
+private typealias Latest = kr.toxicity.model.bukkit.nms.v1_21_R7.NMSImpl
 
 internal class BetterModelProperties(
-    private val plugin: AbstractBetterModelPlugin
+    private val host: BetterModelBootstrapHost
 ) {
     private lateinit var _config: BetterModelConfig
-    private var _metrics: Metrics? = null
 
     val version = parse(Bukkit.getBukkitVersion().substringBefore('-'))
     val nms = when (version) {
-        V26_1, V26_1_1, V26_1_2 -> Latest()
-        V1_21_11 -> kr.toxicity.model.bukkit.nms.v1_21_R7.NMSImpl()
-        V1_21_9, V1_21_10 -> kr.toxicity.model.bukkit.nms.v1_21_R6.NMSImpl()
-        V1_21_6, V1_21_7, V1_21_8 -> kr.toxicity.model.bukkit.nms.v1_21_R5.NMSImpl()
-        V1_21_5 -> kr.toxicity.model.bukkit.nms.v1_21_R4.NMSImpl()
-        V1_21_4 -> kr.toxicity.model.bukkit.nms.v1_21_R3.NMSImpl()
-        else -> {
+        V1_21_11 -> Latest()
+        else if BetterModelBukkit.IS_PAPER -> {
             warn(
                 "Note: this version is officially untested.".toComponent(),
                 "So be careful to use!".toComponent()
             )
             Latest()
         }
+        else -> throw RuntimeException("Unsupported version: $version")
     }
     val scheduler = if (BetterModelBukkit.IS_FOLIA) PaperScheduler() else BukkitScheduler()
     val evaluator = BetterModelEvaluatorImpl()
     val eventbus = BukkitModelEventBusImpl()
     @Suppress("DEPRECATION") //To support Spigot :(
-    val semver = Semver.coerce(plugin.description.version).ifNull { "Unable to load BetterModel's sermver." }
+    val semver = Semver.coerce(host.plugin.description.version).ifNull { "Unable to load BetterModel's semver." }
     val snapshot = runCatching {
-        plugin.attributes().getValue("Dev-Build").toInt()
+        host.attributes().getValue("Dev-Build").toInt()
     }.getOrElse {
         it.handleException("Unable to parse manifest's build data")
         -1
@@ -65,18 +62,10 @@ internal class BetterModelProperties(
     var config
         get() = _config
         set(value) {
-            _config = value.apply {
-                if (metrics()) {
-                    if (_metrics == null) _metrics = Metrics(plugin, 24237)
-                } else {
-                    _metrics?.shutdown()
-                    _metrics = null
-                }
-            }
+            _config = value
         }
     val managers by lazy {
         listOf(
-            CompatibilityManager,
             ArmorManager,
             ProfileManagerImpl,
             SkinManagerImpl,

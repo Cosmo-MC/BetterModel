@@ -1,11 +1,10 @@
 plugins {
     java
     kotlin("jvm")
-    id("org.jetbrains.dokka")
-    id("dev.yumi.gradle.licenser")
+    id("com.github.hierynomus.license")
 }
 
-group = "kr.toxicity.model"
+group = "com.cosmomc"
 version = property("project_version").toString() + (BUILD_NUMBER?.let { "-SNAPSHOT-$it" } ?: "")
 
 val shade = configurations.create("shade")
@@ -13,8 +12,6 @@ val shade = configurations.create("shade")
 configurations.implementation {
     extendsFrom(shade)
 }
-
-rootProject.dependencies.dokka(project)
 
 dependencies {
     testImplementation(kotlin("test"))
@@ -33,13 +30,19 @@ tasks {
 }
 
 license {
-    rule(rootProject.file("LICENSE_HEADER"))
-    include("**/*.java", "**/*.kt")
-    exclude("**/*.properties")
+    header = rootProject.file("LICENSE_HEADER")
+    includes(setOf(
+        "**/*.java",
+        "**/*.kt"
+    ))
+    strictCheck = false
+}
+
+tasks.matching { it.name.startsWith("license") }.configureEach {
+    enabled = false
 }
 
 java {
-    disableAutoTargetJvm()
     toolchain.languageVersion = JavaLanguageVersion.of(JAVA_VERSION)
 }
 
@@ -47,9 +50,3 @@ kotlin {
     jvmToolchain(JAVA_VERSION)
 }
 
-dokka {
-    moduleName = project.name
-    dokkaSourceSets.configureEach {
-        displayName = project.name
-    }
-}
