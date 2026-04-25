@@ -47,7 +47,6 @@ dependencyResolutionManagement {
         maven("https://repo.purpurmc.org/snapshots")
         maven("https://maven.citizensnpcs.co/repo/")
         maven("https://mvn.lumine.io/repository/maven-public/")
-        maven("https://repo.nexomc.com/releases/")
         maven("https://maven.nucleoid.xyz/")
         maven(cosmoRepoUrl) {
             credentials {
@@ -72,6 +71,7 @@ include(
     "purpur",
 
     "nms:v1_21_R7",
+    "nms:v26_R1",
 
     //test
     "test-plugin"

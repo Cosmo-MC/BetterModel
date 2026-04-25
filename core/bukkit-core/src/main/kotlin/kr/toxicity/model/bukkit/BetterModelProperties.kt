@@ -13,6 +13,9 @@ import kr.toxicity.model.api.bukkit.BetterModelBukkit
 import kr.toxicity.model.api.event.PluginEndReloadEvent
 import kr.toxicity.model.api.event.PluginStartReloadEvent
 import kr.toxicity.model.api.pack.PackZipper
+import kr.toxicity.model.api.version.MinecraftVersion.V26_1
+import kr.toxicity.model.api.version.MinecraftVersion.V26_1_1
+import kr.toxicity.model.api.version.MinecraftVersion.V26_1_2
 import kr.toxicity.model.api.version.MinecraftVersion.V1_21_11
 import kr.toxicity.model.api.version.MinecraftVersion.parse
 import kr.toxicity.model.bukkit.configuration.PluginConfiguration
@@ -29,7 +32,8 @@ import kr.toxicity.model.util.warn
 import org.bukkit.Bukkit
 import org.semver4j.Semver
 
-private typealias Latest = kr.toxicity.model.bukkit.nms.v1_21_R7.NMSImpl
+private typealias Latest1_21 = kr.toxicity.model.bukkit.nms.v1_21_R7.NMSImpl
+private typealias Latest26 = kr.toxicity.model.bukkit.nms.v26_R1.NMSImpl
 
 internal class BetterModelProperties(
     private val host: BetterModelBootstrapHost
@@ -38,13 +42,14 @@ internal class BetterModelProperties(
 
     val version = parse(Bukkit.getBukkitVersion().substringBefore('-'))
     val nms = when (version) {
-        V1_21_11 -> Latest()
+        V1_21_11 -> Latest1_21()
+        V26_1, V26_1_1, V26_1_2 -> Latest26()
         else if BetterModelBukkit.IS_PAPER -> {
             warn(
                 "Note: this version is officially untested.".toComponent(),
                 "So be careful to use!".toComponent()
             )
-            Latest()
+            if (version >= V26_1) Latest26() else Latest1_21()
         }
         else -> throw RuntimeException("Unsupported version: $version")
     }
