@@ -17,7 +17,6 @@ import kr.toxicity.model.api.armor.PlayerArmor
 import kr.toxicity.model.api.event.CreatePlayerSkinEvent
 import kr.toxicity.model.api.event.RemovePlayerSkinEvent
 import kr.toxicity.model.api.manager.SkinManager
-import kr.toxicity.model.api.pack.PackObfuscator
 import kr.toxicity.model.api.pack.PackZipper
 import kr.toxicity.model.api.profile.ModelProfile
 import kr.toxicity.model.api.profile.ModelProfileInfo
@@ -621,14 +620,12 @@ object SkinManagerImpl : SkinManager, GlobalManager {
     }
 
     fun write(block: (UVByteBuilder) -> Unit) {
-        val itemObf = PackObfuscator.order()
-        val modelObf = PackObfuscator.order()
         fun UVModel.write(armorResource: ArmorResource? = null) {
             val model = modelName()
-            packName(itemObf.obfuscate(model))
+            packName(model)
             asJson(UVLoadContext(
                 UVTextureName.DEFAULT,
-                { modelObf.obfuscate("${model}_$it") },
+                { "${model}_$it" },
                 { indexer, _, array ->
                     armorResource?.let { ArmorManager.armor.resource(it) }?.let {
                         array += it.toJson()

@@ -25,7 +25,6 @@ import kr.toxicity.model.bukkit.scheduler.BukkitScheduler
 import kr.toxicity.model.bukkit.scheduler.PaperScheduler
 import kr.toxicity.model.manager.*
 import kr.toxicity.model.util.callEvent
-import kr.toxicity.model.util.handleException
 import kr.toxicity.model.util.ifNull
 import kr.toxicity.model.util.toComponent
 import kr.toxicity.model.util.warn
@@ -61,7 +60,8 @@ internal class BetterModelProperties(
     val snapshot = runCatching {
         host.attributes().getValue("Dev-Build").toInt()
     }.getOrElse {
-        it.handleException("Unable to parse manifest's build data")
+        host.plugin.logger.warning("Unable to parse manifest's build data")
+        host.plugin.logger.warning("Reason: ${it.message ?: "Unknown"}")
         -1
     }
     var config
