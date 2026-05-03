@@ -8,20 +8,17 @@ dependencies {
     shade(project(":api")) { isTransitive = false }
     shade(project(":api:bukkit-api")) { isTransitive = false }
     shade(project(":core")) { isTransitive = false }
-    shade("com.cosmomc:cosmo-pack-system-api:26.3.3") { isTransitive = false }
-    shade("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
 
     shade(project(":purpur"))
     rootProject.project("nms").subprojects.forEach {
         shade(project(it.path)) { isTransitive = false }
     }
 
-    shade(libs.bundles.manifestLibrary)
-    shade(libs.bundles.shadedLibrary) {
-        exclude("net.kyori")
-    }
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
+    api(libs.bundles.manifestLibrary)
+    api(libs.armormodel)
 
-    compileOnly(libs.bundles.manifestLibrary)
+    compileOnly("com.cosmomc:cosmo-pack-system-api:26.3.6")
 
     compileOnly("net.citizensnpcs:citizens-main:2.0.42-SNAPSHOT") {
         exclude("net.byteflux")
@@ -36,12 +33,7 @@ tasks.jar {
 
 tasks.shadowJar {
     archiveClassifier.set("")
-    dependencies {
-        exclude(dependency("org.jetbrains:annotations:.*"))
-    }
-    relocate("gg.moonflower.molangcompiler", "com.cosmomc.shaded.gg.moonflower.molangcompiler")
-    relocate("io.leangen.geantyref", "com.cosmomc.shaded.io.leangen.geantyref")
-    relocate("org.objectweb.asm", "com.cosmomc.shaded.org.objectweb.asm")
+    configurations = listOf(project.configurations.getByName("shade"))
 }
 
 tasks.withType<org.gradle.api.publish.tasks.GenerateModuleMetadata>().configureEach {
@@ -53,10 +45,20 @@ publishing {
         artifactId = "bettermodel-bukkit-core"
         setArtifacts(listOf(tasks.shadowJar.get(), tasks.sourcesJar.get()))
         pom.withXml {
-            val dependencies = asNode().get("dependencies")
-            if (dependencies is groovy.util.NodeList) {
-                dependencies.forEach { asNode().remove(it as groovy.util.Node) }
-            }
+            val dependenciesNode = (asNode().get("dependencies") as groovy.util.NodeList)
+                .firstOrNull() as? groovy.util.Node ?: return@withXml
+            dependenciesNode.children()
+                .filterIsInstance<groovy.util.Node>()
+                .filter { dependencyNode ->
+                    val groupId = (dependencyNode.get("groupId") as groovy.util.NodeList)
+                        .firstOrNull()
+                        ?.let { it as groovy.util.Node }
+                        ?.text()
+                    groupId == "com.cosmomc"
+                }
+                .forEach { dependencyNode ->
+                    dependenciesNode.remove(dependencyNode)
+                }
         }
     }
 }

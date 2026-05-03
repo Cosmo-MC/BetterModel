@@ -6,11 +6,6 @@ plugins {
     alias(libs.plugins.resourcefactory.paper)
 }
 
-val libraryDir: Provider<RegularFile> = layout.buildDirectory.file("generated/paper-library")
-val dependenciesContent: String = libs.bundles.library.map { bundle ->
-    bundle.joinToString("\n") { dep -> dep.toString() }
-}.get()
-
 dependencies {
     shade(project(":nms:v1_21_R3")) { isTransitive = false }
     shade(project(":nms:v1_21_R4")) { isTransitive = false }
@@ -29,22 +24,7 @@ tasks.modrinth {
     dependsOn(tasks.modrinthSyncBody)
 }
 
-val generatePaperLibrary by tasks.registering {
-    val outputProvider = libraryDir
-    val contentProvider = dependenciesContent
-
-    outputs.file(outputProvider)
-
-    doLast {
-        val file = outputProvider.get().asFile
-        file.parentFile.mkdirs()
-        file.writeText(contentProvider)
-    }
-}
-
 tasks.shadowJar {
-    dependsOn(generatePaperLibrary)
-    from(libraryDir)
     manifest {
         attributes["paperweight-mappings-namespace"] = "mojang"
     }
@@ -52,7 +32,6 @@ tasks.shadowJar {
 
 paperPluginYaml {
     main = "$group.paper.BetterModelPaper"
-    loader = "$group.paper.BetterModelLoader"
     version = project.version.toString()
     name = "BetterModel"
     foliaSupported = true

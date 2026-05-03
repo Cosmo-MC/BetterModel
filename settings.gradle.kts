@@ -26,8 +26,6 @@ pluginManagement {
         mavenCentral()
 
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://maven.fabricmc.net/")
-        maven("https://maven.neoforged.net/releases/")
     }
 }
 
@@ -39,8 +37,6 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://maven.fabricmc.net/")
-        maven("https://maven.neoforged.net/releases/")
         maven("https://repo.codemc.org/repository/maven-public/")
         maven("https://repo.alessiodp.com/releases/")
         maven("https://maven.blamejared.com/")

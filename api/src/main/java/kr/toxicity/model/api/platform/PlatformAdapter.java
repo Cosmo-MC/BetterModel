@@ -16,7 +16,7 @@ import java.util.UUID;
  * Adapts platform-specific objects and operations to the BetterModel API.
  * <p>
  * This interface provides methods for retrieving players, creating items, and checking server state,
- * abstracting away the differences between platforms like Bukkit and Fabric.
+ * abstracting away the differences between supported server platforms.
  * </p>
  *
  * @since 2.0.0

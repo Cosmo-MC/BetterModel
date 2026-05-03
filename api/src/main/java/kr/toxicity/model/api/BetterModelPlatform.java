@@ -43,7 +43,7 @@ public interface BetterModelPlatform extends ModelEventApplication {
     @NotNull File dataFolder();
 
     /**
-     * Returns the type of JAR file this platform is running on (e.g., SPIGOT, PAPER, FABRIC).
+     * Returns the type of JAR file this platform is running on (e.g., SPIGOT, PAPER).
      *
      * @return the {@link JarType} enum representing the platform's JAR type.
      * @since 2.0.0
@@ -296,7 +296,7 @@ public interface BetterModelPlatform extends ModelEventApplication {
 
     /**
      * Represents the type of JAR file the platform is running on.
-     * This enum helps identify the specific server implementation (e.g., Spigot, Paper, Fabric).
+     * This enum helps identify the specific server implementation (e.g., Spigot, Paper).
      *
      * @since 2.0.0
      */
@@ -311,19 +311,14 @@ public interface BetterModelPlatform extends ModelEventApplication {
          * Indicates a Paper-based server.
          * @since 2.0.0
          */
-        PAPER("paper"),
-        /**
-         * Indicates a Fabric-based server.
-         * @since 2.0.0
-         */
-        FABRIC("fabric");
+        PAPER("paper");
 
         private final String raw;
 
         /**
          * Returns the raw string representation of the JAR type.
          *
-         * @return the raw string (e.g., "spigot", "paper", "fabric")
+         * @return the raw string (e.g., "spigot", "paper")
          * @since 2.0.0
          */
         public String raw() {

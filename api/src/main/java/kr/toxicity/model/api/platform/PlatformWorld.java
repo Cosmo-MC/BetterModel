@@ -8,7 +8,7 @@
 package kr.toxicity.model.api.platform;
 
 /**
- * Represents a world in the underlying platform (Bukkit, Fabric, etc.).
+ * Represents a world in the underlying server platform.
  * <p>
  * This interface serves as an abstraction layer for world-related operations,
  * allowing the core engine to interact with worlds without direct dependencies on platform-specific APIs.

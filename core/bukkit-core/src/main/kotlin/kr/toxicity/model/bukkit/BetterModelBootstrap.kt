@@ -33,7 +33,6 @@ import kr.toxicity.model.api.pack.PackResult
 import kr.toxicity.model.api.pack.PackZipper
 import kr.toxicity.model.api.version.MinecraftVersion
 import kr.toxicity.model.bukkit.command.startBukkitCommand
-import kr.toxicity.model.bukkit.util.audience
 import kr.toxicity.model.bukkit.util.registerListener
 import kr.toxicity.model.manager.ArmorManager
 import kr.toxicity.model.manager.GlobalManager
@@ -138,7 +137,6 @@ class BetterModelBootstrap(
 
     fun onLoad() {
         BetterModelBukkitContext.initialize(host)
-        BetterModelLibrary().load(host)
         BetterModel.compiledModelProvider(compiledModelProvider)
         BetterModel.register(this)
         props = runCatching {
@@ -168,7 +166,7 @@ class BetterModelBootstrap(
                 if (!player.isOp || !config().versionCheck()) return
                 props.scheduler.asyncTask {
                     val result = LATEST_VERSION
-                    player.audience().infoNotNull(
+                    player.infoNotNull(
                         result.release
                             ?.takeIf { props.semver < it.versionNumber() }
                             ?.let { version -> componentOf("New BetterModel release found: ") { append(version.toURLComponent()) } },
@@ -206,7 +204,6 @@ class BetterModelBootstrap(
         if (!firstLoad.get()) return
         props.managers.forEach(GlobalManager::end)
         BetterModel.compiledModelProvider(null)
-        BetterModelBukkitContext.closeAudiencePlatform()
     }
 
     override fun reload(info: ReloadInfo): ReloadResult {
